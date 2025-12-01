@@ -58,3 +58,64 @@ public class CalculadoraReciclagem {
             Periodo periodo) {
 
         // ETAPA 1: Contabilizar o total de tampinhas no período
+ // (Assumimos que cada garrafa possui 1 tampinha)
+        int totalTampinhasPeriodo = garrafas2L + garrafas1L + garrafasAguaMineral;
+
+        // ETAPA 2: Converter tampinhas em quilogramas no período
+        // Garrafas grandes (2L e 1L): 500 tampinhas = 1kg
+        // Garrafas de água mineral: 1000 tampinhas = 1kg
+        double pesoKgGarrafasGrandes = (garrafas2L + garrafas1L) / TAMPINHAS_POR_KG_GARRAFAS_GRANDES;
+        double pesoKgAguaMineral = garrafasAguaMineral / TAMPINHAS_POR_KG_AGUA_MINERAL;
+        double pesoKgPeriodo = pesoKgGarrafasGrandes + pesoKgAguaMineral;
+
+        // ETAPA 3: Anualizar o peso (projetar para 12 meses)
+        double fatorAnualizacao = periodo.getFatorAnualizacao();
+        double pesoKgAnual = pesoKgPeriodo * fatorAnualizacao;
+
+        // ETAPA 4: Calcular o valor potencial de reciclagem
+        double valorAnual = pesoKgAnual * PRECO_POR_KG;
+
+        return new ResultadoCalculo(pesoKgAnual, valorAnual);
+    }
+
+    // --- CLASSE INTERNA DE RESULTADO ---
+    /**
+     * Encapsula os resultados do cálculo de reciclagem.
+     * 
+     * Armazena de forma segura (immutable) o peso anual em quilogramas
+     * e o valor potencial em reais.
+     */
+    public static class ResultadoCalculo {
+        private final double pesoKgAnual;
+        private final double valorAnual;
+
+        /**
+         * Cria um novo resultado com os valores calculados.
+         *
+         * @param pesoKgAnual Peso total anualizado em quilogramas
+         * @param valorAnual Valor potencial anualizado em reais
+         */
+        public ResultadoCalculo(double pesoKgAnual, double valorAnual) {
+            this.pesoKgAnual = pesoKgAnual;
+            this.valorAnual = valorAnual;
+        }
+
+        /**
+         * Obtém o peso total de tampinhas anualizado.
+         *
+         * @return Peso em quilogramas
+         */
+        public double getPesoKgAnual() {
+            return pesoKgAnual;
+        }
+
+        /**
+         * Obtém o valor potencial de reciclagem anualizado.
+         *
+         * @return 
+         */
+        public double getValorAnual() {
+            return valorAnual;
+        }
+    }
+}
