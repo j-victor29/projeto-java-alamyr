@@ -63,3 +63,74 @@ public class ReciclagemApp extends JFrame {
 
         return painel;
     }
+
+    // --- ADICIONA O TÍTULO ---
+    private void adicionarTitulo(JPanel painel, GridBagConstraints gbc) {
+        JLabel lblTitulo = new JLabel("Calculadora de Reciclagem de Tampinhas PET");
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 16));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        painel.add(lblTitulo, gbc);
+    }
+
+    // --- ADICIONA OS CAMPOS DE ENTRADA ---
+    private void adicionarCamposEntrada(JPanel painel, GridBagConstraints gbc) {
+        gbc.gridwidth = 1;
+
+        // Campo: Garrafas 2L
+        adicionarCampo(painel, gbc, "Garrafas PET 2L consumidas:", 
+                       txtGarrafas2L = new JTextField("0", 10), 1);
+
+        // Campo: Garrafas 1L
+        adicionarCampo(painel, gbc, "Garrafas PET 1L consumidas:", 
+                       txtGarrafas1L = new JTextField("0", 10), 2);
+
+        // Campo: Garrafas Água Mineral
+        adicionarCampo(painel, gbc, "Garrafas de Água Mineral consumidas:", 
+                       txtGarrafasAguaMineral = new JTextField("0", 10), 3);
+
+        // Campo: Período
+        cmbPeriodo = new JComboBox<>(CalculadoraReciclagem.Periodo.values());
+        adicionarCampo(painel, gbc, "Período de consumo:", cmbPeriodo, 4);
+    }
+
+    // --- MÉTODO AUXILIAR PARA ADICIONAR UM CAMPO ---
+    private void adicionarCampo(JPanel painel, GridBagConstraints gbc, String rotulo, 
+                               JComponent componente, int linha) {
+        gbc.gridx = 0;
+        gbc.gridy = linha;
+        painel.add(new JLabel(rotulo), gbc);
+        
+        gbc.gridx = 1;
+        painel.add(componente, gbc);
+    }
+
+    // --- ADICIONA O BOTÃO DE CALCULAR ---
+    private void adicionarBotaoCalcular(JPanel painel, GridBagConstraints gbc) {
+        btnCalcular = new JButton("Calcular Potencial Anual");
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(15, 5, 15, 5);
+        painel.add(btnCalcular, gbc);
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridwidth = 1;
+    }
+
+    // --- ADICIONA SEPARADOR VISUAL ---
+    private void adicionarSeparador(JPanel painel, GridBagConstraints gbc) {
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        painel.add(separator, gbc);
+        gbc.gridwidth = 1;
+    }
+
+    // --- ADICIONA OS CAMPOS DE RESULTADO ---
+    private void adicionarCamposResultado(JPanel painel, GridBagConstraints gbc) {
+        // Peso Total
+        lblPesoAnual = new JLabel(DF_PESO.format(0.0) + " kg");
+        lblPesoAnual.setFont(new Font("Arial", Font.BOLD, 14));
+        adicionarCampo(painel, gbc, "Peso Total de Tampinhas (Anual):", lblPesoAnual, 7);
