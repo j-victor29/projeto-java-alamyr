@@ -1,61 +1,52 @@
-public class CalculadoraReciclagem { // Classe principal
+public class CalculadoraReciclagem { // calcula a reciclagem das tampinhas
 
-    private static final double TAMPINHAS_POR_KG_GARRAFAS_GRANDES = 500.0; // 500 tampinhas = 1kg (2L/1L)
-    private static final double TAMPINHAS_POR_KG_AGUA_MINERAL = 1000.0;    // 1000 tampinhas = 1kg (água)
-    private static final double PRECO_POR_KG = 0.98;                       // Valor do kg reciclado
+    private static final double TAMPINHAS_GRANDES_POR_KG = 500.0;   // 500 tampinhas de 1L e 2L = 1 kg
+    private static final double TAMPINHAS_AGUA_POR_KG = 1000.0;     // 1000 tampinhas de água = 1 kg
+    private static final double PRECO_KG = 0.98;                    // preço por kg reciclado
 
-    public enum Periodo { // Enum dos períodos
-        DIARIO(365.0),     // Multiplica por 365
-        SEMANAL(52.0),     // Multiplica por 52
-        MENSAL(12.0),      // Multiplica por 12
-        ANUAL(1.0);        // Já anual
+    public enum PeriodoColeta { // tipo de período que o usuário escolhe
+        DIARIO(365.0),   // todo dia multiplica por 365
+        SEMANAL(52.0),   // toda semana, 52 vezes por ano
+        MENSAL(12.0),    // todo mês, 12 vezes
+        ANUAL(1.0);      // uma vez por ano
 
-        private final double fatorAnualizacao; // Guarda o multiplicador
+        private final double multiplicadorAnual; // fator de multiplicação pro ano
 
-        Periodo(double fatorAnualizacao) { // Construtor do enum
-            this.fatorAnualizacao = fatorAnualizacao; // Armazena o fator
+        PeriodoColeta(double multiplicadorAnual) {
+            this.multiplicadorAnual = multiplicadorAnual;
         }
 
-        public double getFatorAnualizacao() { return fatorAnualizacao; } // Retorna fator
+        public double getMultiplicador() {
+            return multiplicadorAnual;
+        }
     }
 
-    public ResultadoCalculo calcularPotencialAnual( // Método que calcula tudo
-            int garrafas2L,            // Qtd de 2L
-            int garrafas1L,            // Qtd de 1L
-            int garrafasAguaMineral,   // Qtd de água
-            Periodo periodo) {         // Período informado
+    public Resultado calcularAnual(
+            int tampinhas2L,        // tampinhas de garrafa 2L
+            int tampinhas1L,        // tampinhas de garrafa 1L
+            int tampinhasAgua,      // tampinhas de água mineral
+            PeriodoColeta periodo   // qual período foi escolhido
+    ) {
+        double pesoGrandes = (tampinhas2L + tampinhas1L) / TAMPINHAS_GRANDES_POR_KG; // peso em kg das grandes
+        double pesoAgua = tampinhasAgua / TAMPINHAS_AGUA_POR_KG; // peso em kg da água
+        double pesoTotal = pesoGrandes + pesoAgua; // peso total do período
+        double pesoAnual = pesoTotal * periodo.getMultiplicador(); // converte pro ano
+        double valorAnual = pesoAnual * PRECO_KG; // valor em reais
 
-        int totalTampinhasPeriodo =
-                garrafas2L + garrafas1L + garrafasAguaMineral; // Soma as tampinhas (1 por garrafa)
-
-        double pesoKgGrandes =
-                (garrafas2L + garrafas1L) / TAMPINHAS_POR_KG_GARRAFAS_GRANDES; // Peso kg das grandes
-
-        double pesoKgAgua =
-                garrafasAguaMineral / TAMPINHAS_POR_KG_AGUA_MINERAL; // Peso kg das de água
-
-        double pesoKgPeriodo =
-                pesoKgGrandes + pesoKgAgua; // Peso total do período (kg)
-
-        double pesoKgAnual =
-                pesoKgPeriodo * periodo.getFatorAnualizacao(); // Converte para equivalente anual
-
-        double valorAnual =
-                pesoKgAnual * PRECO_POR_KG; // Calcula o valor em R$ por ano
-
-        return new ResultadoCalculo(pesoKgAnual, valorAnual); // Retorna os resultados
+        return new Resultado(pesoAnual, valorAnual);
     }
 
-    public static class ResultadoCalculo { // Classe do resultado
-        private final double pesoKgAnual; // Peso anual em kg
-        private final double valorAnual;  // Valor anual em R$
+    // ----- CLASSE QUE GUARDA O RESULTADO -----
+    public static class Resultado {
+        private final double pesoEmKgAno;        // Peso total em kg no ano
+        private final double valorEmReaisAno;    // Valor total em reais no ano
 
-        public ResultadoCalculo(double pesoKgAnual, double valorAnual) { // Construtor
-            this.pesoKgAnual = pesoKgAnual; // Salva peso
-            this.valorAnual = valorAnual;   // Salva valor
+        public Resultado(double pesoEmKgAno, double valorEmReaisAno) { // Guarda os valores
+            this.pesoEmKgAno = pesoEmKgAno;
+            this.valorEmReaisAno = valorEmReaisAno;
         }
 
-        public double getPesoKgAnual() { return pesoKgAnual; } // Retorna peso anual
-        public double getValorAnual() { return valorAnual; }   // Retorna valor anual
+        public double getPesoKgAnual() { return pesoEmKgAno; }         // Retorna o peso
+        public double getValorAnual() { return valorEmReaisAno; } // Retorna o valor
     }
 }

@@ -1,200 +1,112 @@
-import javax.swing.*;
-import java.awt.*;
-import java.text.DecimalFormat;
+import javax.swing.*;       // componentes de interface
+import java.awt.*;          // classes gráficas
+import java.text.DecimalFormat; // formata números
 
-public class ReciclagemApp extends JFrame {
+public class ReciclagemApp extends JFrame { // janela principal do app
 
-    // --- CAMPOS DE ENTRADA DO USUÁRIO ---
-    private JTextField txtGarrafas2L;
-    private JTextField txtGarrafas1L;
-    private JTextField txtGarrafasAguaMineral;
-    private JComboBox<CalculadoraReciclagem.Periodo> cmbPeriodo;
-    private JButton btnCalcular;
+    private JTextField campoGarrafas2L;     // campo pro usuário digitar garrafas 2L
+    private JTextField campoGarrafas1L;     // campo pro usuário digitar garrafas 1L
+    private JTextField campoGarrafasAgua;   // campo pro usuário digitar água
+    private JComboBox<CalculadoraReciclagem.PeriodoColeta> selectPeriodo; // seletor do período
+    private JButton botaoCalcular;          // botão pra calcular
 
-    // --- CAMPOS DE SAÍDA (RESULTADOS) ---
-    private JLabel lblPesoAnual;
-    private JLabel lblValorAnual;
+    private JLabel labelPesoAno;            // mostra o peso anual
+    private JLabel labelValorAno;           // mostra o valor anual
 
-    // --- FORMATADORES DE NÚMERO ---
-    private static final DecimalFormat DF_PESO = new DecimalFormat("#,##0.000");
-    private static final DecimalFormat DF_VALOR = new DecimalFormat("R$ #,##0.00");
+    private static final DecimalFormat FORMATO_PESO = new DecimalFormat("#,##0.000"); // 0,000 kg
+    private static final DecimalFormat FORMATO_VALOR = new DecimalFormat("R$ #,##0.00"); // R$ 0,00
 
-    // --- CONSTRUTOR ---
     public ReciclagemApp() {
-        configurarJanela();
-        inicializarComponentes();
-        adicionarOuvintes();
-        setVisible(true);
+        configurarJanela();     // ajeita a janela
+        iniciarComponentes();   // cria os campos e botões
+        adicionarEventos();     // adiciona ações
+        setVisible(true);       // mostra tudo
     }
 
-    // --- CONFIGURAÇÃO DA JANELA PRINCIPAL ---
     private void configurarJanela() {
-        setTitle("Equipe: PescaViva | Calculadora de Reciclagem de Tampinhas PET");
+        setTitle("PescaViva | Calculadora de Reciclagem de Tampinhas PET");
         setSize(600, 450);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Centraliza na tela
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // fecha ao clicar no X
+        setLocationRelativeTo(null); // centraliza
     }
 
-    // --- INICIALIZAÇÃO DOS COMPONENTES VISUAIS ---
-    private void inicializarComponentes() {
-        JPanel painel = criarPainelPrincipal();
+    private void iniciarComponentes() {
+        JPanel painel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel titulo = new JLabel("Calculadora de Reciclagem de Tampinhas PET");
+        titulo.setFont(new Font("Arial", Font.BOLD, 16));
+        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+        painel.add(titulo, gbc);
+
+        gbc.gridwidth = 1;
+        adicionarLinha(painel, gbc, "Garrafas PET 2L:", campoGarrafas2L = new JTextField("0", 10), 1);
+        adicionarLinha(painel, gbc, "Garrafas PET 1L:", campoGarrafas1L = new JTextField("0", 10), 2);
+        adicionarLinha(painel, gbc, "Garrafas Água Mineral:", campoGarrafasAgua = new JTextField("0", 10), 3);
+
+        selectPeriodo = new JComboBox<>(CalculadoraReciclagem.PeriodoColeta.values());
+        adicionarLinha(painel, gbc, "Período de consumo:", selectPeriodo, 4);
+
+        botaoCalcular = new JButton("Calcular Potencial Anual");
+        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2;
+        painel.add(botaoCalcular, gbc);
+        gbc.gridwidth = 1;
+
+        JSeparator sep = new JSeparator();
+        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2;
+        painel.add(sep, gbc);
+        gbc.gridwidth = 1;
+
+        labelPesoAno = new JLabel(FORMATO_PESO.format(0.0) + " kg");
+        labelPesoAno.setFont(new Font("Arial", Font.BOLD, 14));
+        adicionarLinha(painel, gbc, "Peso Total (Anual):", labelPesoAno, 7);
+
+        labelValorAno = new JLabel(FORMATO_VALOR.format(0.0));
+        labelValorAno.setFont(new Font("Arial", Font.BOLD, 14));
+        adicionarLinha(painel, gbc, "Valor Potencial (Anual):", labelValorAno, 8);
+
         this.add(painel);
     }
 
-    // --- CRIAÇÃO DO PAINEL PRINCIPAL ---
-    private JPanel criarPainelPrincipal() {
-        JPanel painel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // Seção de Título
-        adicionarTitulo(painel, gbc);
-
-        // Seção de Entrada
-        adicionarCamposEntrada(painel, gbc);
-
-        // Botão de Cálculo
-        adicionarBotaoCalcular(painel, gbc);
-
-        // Seção de Resultados
-        adicionarSeparador(painel, gbc);
-        adicionarCamposResultado(painel, gbc);
-
-        return painel;
-    }
-
-    // --- ADICIONA O TÍTULO ---
-    private void adicionarTitulo(JPanel painel, GridBagConstraints gbc) {
-        JLabel lblTitulo = new JLabel("Calculadora de Reciclagem de Tampinhas PET");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 16));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        painel.add(lblTitulo, gbc);
-    }
-
-    // --- ADICIONA OS CAMPOS DE ENTRADA ---
-    private void adicionarCamposEntrada(JPanel painel, GridBagConstraints gbc) {
-        gbc.gridwidth = 1;
-
-        // Campo: Garrafas 2L
-        adicionarCampo(painel, gbc, "Garrafas PET 2L consumidas:", 
-                       txtGarrafas2L = new JTextField("0", 10), 1);
-
-        // Campo: Garrafas 1L
-        adicionarCampo(painel, gbc, "Garrafas PET 1L consumidas:", 
-                       txtGarrafas1L = new JTextField("0", 10), 2);
-
-        // Campo: Garrafas Água Mineral
-        adicionarCampo(painel, gbc, "Garrafas de Água Mineral consumidas:", 
-                       txtGarrafasAguaMineral = new JTextField("0", 10), 3);
-
-        // Campo: Período
-        cmbPeriodo = new JComboBox<>(CalculadoraReciclagem.Periodo.values());
-        adicionarCampo(painel, gbc, "Período de consumo:", cmbPeriodo, 4);
-    }
-
-    // --- MÉTODO AUXILIAR PARA ADICIONAR UM CAMPO ---
-    private void adicionarCampo(JPanel painel, GridBagConstraints gbc, String rotulo, 
-                               JComponent componente, int linha) {
-        gbc.gridx = 0;
-        gbc.gridy = linha;
-        painel.add(new JLabel(rotulo), gbc);
-        
+    private void adicionarLinha(JPanel painel, GridBagConstraints gbc, String texto, JComponent comp, int linha) {
+        gbc.gridx = 0; gbc.gridy = linha;
+        painel.add(new JLabel(texto), gbc);
         gbc.gridx = 1;
-        painel.add(componente, gbc);
+        painel.add(comp, gbc);
     }
 
-    // --- ADICIONA O BOTÃO DE CALCULAR ---
-    private void adicionarBotaoCalcular(JPanel painel, GridBagConstraints gbc) {
-        btnCalcular = new JButton("Calcular");
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(15, 5, 15, 5);
-        painel.add(btnCalcular, gbc);
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridwidth = 1;
+    private void adicionarEventos() {
+        botaoCalcular.addActionListener(e -> executarCalculo());
     }
 
-    // --- ADICIONA SEPARADOR VISUAL ---
-    private void adicionarSeparador(JPanel painel, GridBagConstraints gbc) {
-        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.gridwidth = 2;
-        painel.add(separator, gbc);
-        gbc.gridwidth = 1;
-    }
-
-    // --- ADICIONA OS CAMPOS DE RESULTADO ---
-    private void adicionarCamposResultado(JPanel painel, GridBagConstraints gbc) {
-        // Peso Total
-        lblPesoAnual = new JLabel(DF_PESO.format(0.0) + " kg");
-        lblPesoAnual.setFont(new Font("Arial", Font.BOLD, 14));
-        adicionarCampo(painel, gbc, "Peso Total de Tampinhas (Anual):",lblPesoAnual, 7);
-        // Valor Potencial
-        lblValorAnual = new JLabel(DF_VALOR.format(0.0));
-        lblValorAnual.setFont(new Font("Arial", Font.BOLD, 14));
-        adicionarCampo(painel, gbc, "Valor Potencial de Reciclagem (Anual):", lblValorAnual, 8);
-    }
-
-    // --- ADICIONA OUVINTES DE EVENTOS ---
-    private void adicionarOuvintes() {
-        btnCalcular.addActionListener(e -> executarCalculo());
-    }
-
-    // --- EXECUTA O CÁLCULO ---
     private void executarCalculo() {
         try {
-            // Coleta os valores do usuário
-            int garrafas2L = Integer.parseInt(txtGarrafas2L.getText().trim());
-            int garrafas1L = Integer.parseInt(txtGarrafas1L.getText().trim());
-            int garrafasAguaMineral = Integer.parseInt(txtGarrafasAguaMineral.getText().trim());
-            CalculadoraReciclagem.Periodo periodo = (CalculadoraReciclagem.Periodo) cmbPeriodo.getSelectedItem();
+            int qtd2L = Integer.parseInt(campoGarrafas2L.getText().trim());
+            int qtd1L = Integer.parseInt(campoGarrafas1L.getText().trim());
+            int qtdAgua = Integer.parseInt(campoGarrafasAgua.getText().trim());
+            CalculadoraReciclagem.PeriodoColeta periodo =
+                    (CalculadoraReciclagem.PeriodoColeta) selectPeriodo.getSelectedItem();
 
-            // Valida os valores
-            validarEntradas(garrafas2L, garrafas1L, garrafasAguaMineral);
+            if (qtd2L < 0 || qtd1L < 0 || qtdAgua < 0) { // não aceita números negativos
+                JOptionPane.showMessageDialog(this, "Valores não podem ser negativos.", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            // Realiza o cálculo
-            CalculadoraReciclagem calculadora = new CalculadoraReciclagem();
-            CalculadoraReciclagem.ResultadoCalculo resultado = calculadora.calcularPotencialAnual(
-                    garrafas2L, garrafas1L, garrafasAguaMineral, periodo
-            );
+            CalculadoraReciclagem calc = new CalculadoraReciclagem();
+            CalculadoraReciclagem.Resultado resultado = calc.calcularAnual(qtd2L, qtd1L, qtdAgua, periodo);
 
-            // Exibe os resultados na tela
-            exibirResultados(resultado);
+            labelPesoAno.setText(FORMATO_PESO.format(resultado.getPesoKgAnual()) + " kg");
+            labelValorAno.setText(FORMATO_VALOR.format(resultado.getValorAnual()));
 
         } catch (NumberFormatException ex) {
-            exibirErro("Entrada Inválida", 
-                      "Por favor, insira apenas números inteiros válidos para o consumo de garrafas.");
-        } catch (IllegalArgumentException ex) {
-            exibirErro("Erro de Lógica", ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Digite apenas números!", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
-            exibirErro("Erro Inesperado", "Ocorreu um erro: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // --- VALIDA AS ENTRADAS DO USUÁRIO ---
-    private void validarEntradas(int garrafas2L, int garrafas1L, int garrafasAguaMineral) {
-        if (garrafas2L < 0 || garrafas1L < 0 || garrafasAguaMineral < 0) {
-            throw new IllegalArgumentException("Os valores de consumo não podem ser negativos.");
-        }
-    }
-
-    // --- EXIBE OS RESULTADOS ---
-    private void exibirResultados(CalculadoraReciclagem.ResultadoCalculo resultado) {
-        lblPesoAnual.setText(DF_PESO.format(resultado.getPesoKgAnual()) + " kg");
-        lblValorAnual.setText(DF_VALOR.format(resultado.getValorAnual()));
-    }
-
-    // --- EXIBE MENSAGEM DE ERRO ---
-    private void exibirErro(String titulo, String mensagem) {
-        JOptionPane.showMessageDialog(this, mensagem, titulo, JOptionPane.ERROR_MESSAGE);
-    }
-
-    // --- MÉTODO PRINCIPAL ---
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ReciclagemApp());
     }
