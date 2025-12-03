@@ -61,11 +61,11 @@ public class ReciclagemApp extends JFrame { // janela principal do app
 
         labelPesoAno = new JLabel(FORMATO_PESO.format(0.0) + " kg");
         labelPesoAno.setFont(new Font("Arial", Font.BOLD, 14));
-        adicionarLinha(painel, gbc, "Peso Total (Anual):", labelPesoAno, 7);
+        adicionarLinha(painel, gbc, "Peso Total de Tampinhas (Anual):", labelPesoAno, 7);
 
         labelValorAno = new JLabel(FORMATO_VALOR.format(0.0));
         labelValorAno.setFont(new Font("Arial", Font.BOLD, 14));
-        adicionarLinha(painel, gbc, "Valor Potencial (Anual):", labelValorAno, 8);
+        adicionarLinha(painel, gbc, "Valor Potencial de Reciclagem (Anual):", labelValorAno, 8);
 
         this.add(painel);
     }
