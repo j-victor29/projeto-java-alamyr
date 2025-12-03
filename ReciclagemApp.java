@@ -133,7 +133,7 @@ public class ReciclagemApp extends JFrame {
         // Peso Total
         lblPesoAnual = new JLabel(DF_PESO.format(0.0) + " kg");
         lblPesoAnual.setFont(new Font("Arial", Font.BOLD, 14));
-        adicionarCampo(painel, gbc, "Peso Total de Tampinhas (Anual):",
+        adicionarCampo(painel, gbc, "Peso Total de Tampinhas (Anual):",lblPesoAnual, 7);
         // Valor Potencial
         lblValorAnual = new JLabel(DF_VALOR.format(0.0));
         lblValorAnual.setFont(new Font("Arial", Font.BOLD, 14));
