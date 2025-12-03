@@ -133,4 +133,69 @@ public class ReciclagemApp extends JFrame {
         // Peso Total
         lblPesoAnual = new JLabel(DF_PESO.format(0.0) + " kg");
         lblPesoAnual.setFont(new Font("Arial", Font.BOLD, 14));
-        adicionarCampo(painel, gbc, "Peso Total de Tampinhas (Anual):", lblPesoAnual, 7);
+        adicionarCampo(painel, gbc, "Peso Total de Tampinhas (Anual):",
+        // Valor Potencial
+        lblValorAnual = new JLabel(DF_VALOR.format(0.0));
+        lblValorAnual.setFont(new Font("Arial", Font.BOLD, 14));
+        adicionarCampo(painel, gbc, "Valor Potencial de Reciclagem (Anual):", lblValorAnual, 8);
+    }
+
+    // --- ADICIONA OUVINTES DE EVENTOS ---
+    private void adicionarOuvintes() {
+        btnCalcular.addActionListener(e -> executarCalculo());
+    }
+
+    // --- EXECUTA O CÁLCULO ---
+    private void executarCalculo() {
+        try {
+            // Coleta os valores do usuário
+            int garrafas2L = Integer.parseInt(txtGarrafas2L.getText().trim());
+            int garrafas1L = Integer.parseInt(txtGarrafas1L.getText().trim());
+            int garrafasAguaMineral = Integer.parseInt(txtGarrafasAguaMineral.getText().trim());
+            CalculadoraReciclagem.Periodo periodo = (CalculadoraReciclagem.Periodo) cmbPeriodo.getSelectedItem();
+
+            // Valida os valores
+            validarEntradas(garrafas2L, garrafas1L, garrafasAguaMineral);
+
+            // Realiza o cálculo
+            CalculadoraReciclagem calculadora = new CalculadoraReciclagem();
+            CalculadoraReciclagem.ResultadoCalculo resultado = calculadora.calcularPotencialAnual(
+                    garrafas2L, garrafas1L, garrafasAguaMineral, periodo
+            );
+
+            // Exibe os resultados na tela
+            exibirResultados(resultado);
+
+        } catch (NumberFormatException ex) {
+            exibirErro("Entrada Inválida", 
+                      "Por favor, insira apenas números inteiros válidos para o consumo de garrafas.");
+        } catch (IllegalArgumentException ex) {
+            exibirErro("Erro de Lógica", ex.getMessage());
+        } catch (Exception ex) {
+            exibirErro("Erro Inesperado", "Ocorreu um erro: " + ex.getMessage());
+        }
+    }
+
+    // --- VALIDA AS ENTRADAS DO USUÁRIO ---
+    private void validarEntradas(int garrafas2L, int garrafas1L, int garrafasAguaMineral) {
+        if (garrafas2L < 0 || garrafas1L < 0 || garrafasAguaMineral < 0) {
+            throw new IllegalArgumentException("Os valores de consumo não podem ser negativos.");
+        }
+    }
+
+    // --- EXIBE OS RESULTADOS ---
+    private void exibirResultados(CalculadoraReciclagem.ResultadoCalculo resultado) {
+        lblPesoAnual.setText(DF_PESO.format(resultado.getPesoKgAnual()) + " kg");
+        lblValorAnual.setText(DF_VALOR.format(resultado.getValorAnual()));
+    }
+
+    // --- EXIBE MENSAGEM DE ERRO ---
+    private void exibirErro(String titulo, String mensagem) {
+        JOptionPane.showMessageDialog(this, mensagem, titulo, JOptionPane.ERROR_MESSAGE);
+    }
+
+    // --- MÉTODO PRINCIPAL ---
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new ReciclagemApp());
+    }
+}
