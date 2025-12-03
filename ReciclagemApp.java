@@ -108,7 +108,7 @@ public class ReciclagemApp extends JFrame {
 
     // --- ADICIONA O BOTÃO DE CALCULAR ---
     private void adicionarBotaoCalcular(JPanel painel, GridBagConstraints gbc) {
-        btnCalcular = new JButton("Calcular Potencial Anual");
+        btnCalcular = new JButton("Calcular");
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.gridwidth = 2;
