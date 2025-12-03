@@ -42,14 +42,14 @@ public class ReciclagemApp extends JFrame { // janela principal do app
         painel.add(titulo, gbc);
 
         gbc.gridwidth = 1;
-        adicionarLinha(painel, gbc, "Garrafas PET 2L:", campoGarrafas2L = new JTextField("0", 10), 1);
-        adicionarLinha(painel, gbc, "Garrafas PET 1L:", campoGarrafas1L = new JTextField("0", 10), 2);
-        adicionarLinha(painel, gbc, "Garrafas Água Mineral:", campoGarrafasAgua = new JTextField("0", 10), 3);
+        adicionarLinha(painel, gbc, "Garrafas PET 2L consumidas:", campoGarrafas2L = new JTextField("0", 10), 1);
+        adicionarLinha(painel, gbc, "Garrafas PET 1L consumidas:", campoGarrafas1L = new JTextField("0", 10), 2);
+        adicionarLinha(painel, gbc, "Garrafas Água Minera consumidas:", campoGarrafasAgua = new JTextField("0", 10), 3);
 
         selectPeriodo = new JComboBox<>(CalculadoraReciclagem.PeriodoColeta.values());
         adicionarLinha(painel, gbc, "Período de consumo:", selectPeriodo, 4);
 
-        botaoCalcular = new JButton("Calcular Potencial Anual");
+        botaoCalcular = new JButton("Calcular");
         gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2;
         painel.add(botaoCalcular, gbc);
         gbc.gridwidth = 1;
